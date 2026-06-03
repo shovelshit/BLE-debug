@@ -68,6 +68,44 @@
   padding: 0 4rpx;
 }
 
+/* 搜索栏 */
+.search-bar {
+  padding: 16rpx 24rpx;
+  background: #ffffff;
+  border-bottom: 1rpx solid #e8ecf2;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #f2f4f8;
+  border-radius: 40rpx;
+  padding: 0 24rpx;
+  height: 72rpx;
+}
+
+.search-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+  min-width: 0;
+  height: 72rpx;
+  line-height: 72rpx;
+}
+
+.search-clear {
+  font-size: 28rpx;
+  color: #bbb;
+  padding: 0 4rpx 0 12rpx;
+  flex-shrink: 0;
+}
+
 /* 扫描操作区（过滤 + 清空） */
 .scan-actions {
   display: flex;

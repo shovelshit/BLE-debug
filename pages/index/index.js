@@ -7,6 +7,7 @@ Page({
     devices: [],         // 扫描到的设备列表（全部）
     filteredDevices: [], // 过滤后的设备列表
     filterEmpty: false,  // 是否过滤无名称设备
+    searchKeyword: '',   // 搜索关键词
     connectedDeviceId: null,
     bluetoothState: 'unknown', // 'unknown' | 'on' | 'off' | 'unsupported'
     isUnsupported: false,      // 当前平台不支持蓝牙
@@ -126,19 +127,44 @@ Page({
     });
   },
 
-  // 过滤逻辑：过滤掉无名称的设备
-  _applyFilter(devices) {
-    if (!this.data.filterEmpty) return devices;
-    return devices.filter(d => d.name && d.name.trim() !== '');
+  // 搜索栏输入
+  onSearchInput(e) {
+    const searchKeyword = e.detail.value || '';
+    this.setData({
+      searchKeyword,
+      filteredDevices: this._applyFilter(this.data.devices, searchKeyword),
+    });
+  },
+
+  // 清空搜索
+  clearSearch() {
+    this.setData({
+      searchKeyword: '',
+      filteredDevices: this._applyFilter(this.data.devices, ''),
+    });
+  },
+
+  // 过滤逻辑：同时支持过滤空设备 + 搜索关键词
+  _applyFilter(devices, keyword) {
+    const kw = (keyword !== undefined ? keyword : this.data.searchKeyword).trim().toLowerCase();
+    let result = devices;
+    if (this.data.filterEmpty) {
+      result = result.filter(d => d.name && d.name.trim() !== '');
+    }
+    if (kw) {
+      result = result.filter(d =>
+        (d.name || '').toLowerCase().includes(kw) ||
+        (d.deviceId || '').toLowerCase().includes(kw)
+      );
+    }
+    return result;
   },
 
   // 切换过滤空设备
   toggleFilterEmpty() {
     const filterEmpty = !this.data.filterEmpty;
-    const filteredDevices = filterEmpty
-      ? this.data.devices.filter(d => d.name && d.name.trim() !== '')
-      : this.data.devices;
-    this.setData({ filterEmpty, filteredDevices });
+    this.setData({ filterEmpty });
+    this.setData({ filteredDevices: this._applyFilter(this.data.devices) });
   },
 
   // 选择设备 -> 连接（使用 filteredDevices 里的设备，也传 name）

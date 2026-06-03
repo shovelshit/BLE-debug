@@ -179,9 +179,9 @@
 }
 
 .card-menu-btn {
-  font-size: 28rpx;
+  font-size: 36rpx;
   color: #bbb;
-  padding: 6rpx 10rpx;
+  padding: 8rpx 14rpx;
   border-radius: 8rpx;
 }
 

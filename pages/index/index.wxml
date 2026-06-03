@@ -46,6 +46,22 @@
     </view>
   </view>
 
+  <!-- 搜索栏 -->
+  <view class="search-bar" wx:if="{{devices.length > 0}}">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        placeholder="搜索设备名称或 MAC 地址"
+        placeholder-style="color:#bbb"
+        confirm-type="search"
+      />
+      <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="clearSearch">✕</text>
+    </view>
+  </view>
+
   <!-- 设备列表 -->
   <scroll-view scroll-y class="device-list" wx:if="{{filteredDevices.length > 0}}">
     <view
@@ -85,11 +101,14 @@
     </view>
   </scroll-view>
 
-  <!-- 过滤后无结果 -->
+  <!-- 过滤/搜索后无结果 -->
   <view class="empty-state" wx:if="{{filteredDevices.length === 0 && devices.length > 0 && !isScanning}}">
     <text class="empty-icon">🔍</text>
-    <text>所有设备均无名称</text>
-    <text class="text-xs text-gray" style="margin-top: 12rpx;">关闭过滤可查看全部 {{devices.length}} 个设备</text>
+    <text wx:if="{{searchKeyword}}">未找到「{{searchKeyword}}」相关设备</text>
+    <text wx:else>所有设备均无名称</text>
+    <text class="text-xs text-gray" style="margin-top: 12rpx;">
+      共发现 {{devices.length}} 个设备{{searchKeyword ? '，清空搜索可查看全部' : '，关闭过滤可查看全部'}}
+    </text>
   </view>
 
   <!-- 不支持蓝牙（PC/Mac） -->

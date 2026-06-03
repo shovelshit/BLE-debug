@@ -1,10 +1,10 @@
 {
   "pages": [
+    "pages/quick/quick",
     "pages/index/index",
     "pages/device/device",
     "pages/characteristic/characteristic",
-    "pages/log/log",
-    "pages/quick/quick"
+    "pages/log/log"
   ],
   "window": {
     "backgroundTextStyle": "dark",
