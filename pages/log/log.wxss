@@ -1,0 +1,196 @@
+/* pages/log/log.wxss（浅色系） */
+.container {
+  min-height: 100vh;
+  background: #f2f4f8;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 工具栏 */
+.toolbar {
+  background: #ffffff;
+  border-bottom: 1rpx solid #e4e8f0;
+  padding: 16rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.filter-tabs {
+  flex: 1;
+  display: flex;
+  gap: 8rpx;
+  overflow-x: auto;
+}
+
+.filter-tab {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  color: #bbb;
+  background: #f2f4f8;
+  border: 1rpx solid transparent;
+}
+
+.tab-active {
+  color: #333;
+  background: #e8ecf5;
+  border-color: #c8d0e4;
+}
+
+.tab-active-send {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+  border-color: rgba(46, 125, 50, 0.25);
+}
+
+.tab-active-recv {
+  color: #1565c0;
+  background: rgba(25, 118, 210, 0.08);
+  border-color: rgba(25, 118, 210, 0.25);
+}
+
+.tab-active-info {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.08);
+  border-color: rgba(230, 81, 0, 0.25);
+}
+
+.tab-active-error {
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.08);
+  border-color: rgba(198, 40, 40, 0.25);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 20rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.text-red  { color: #c62828; }
+.text-blue { color: #1565c0; }
+
+.log-count {
+  padding: 10rpx 28rpx;
+  background: #fafbfd;
+  border-bottom: 1rpx solid #edf0f7;
+}
+
+/* 日志列表 */
+.log-list {
+  flex: 1;
+  background: #ffffff;
+}
+
+.log-item {
+  padding: 16rpx 24rpx;
+  border-bottom: 1rpx solid #f0f3f9;
+  border-left: 4rpx solid transparent;
+}
+
+.log-item-send {
+  border-left-color: #43a047;
+  background: rgba(67, 160, 71, 0.04);
+}
+
+.log-item-recv {
+  border-left-color: #1976d2;
+  background: rgba(25, 118, 210, 0.04);
+}
+
+.log-item-info {
+  border-left-color: #f57f17;
+  background: rgba(245, 127, 23, 0.03);
+}
+
+.log-item-error {
+  border-left-color: #e53935;
+  background: rgba(229, 57, 53, 0.04);
+}
+
+.log-item:active {
+  opacity: 0.7;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 6rpx;
+}
+
+.log-time {
+  font-size: 20rpx;
+  color: #bbb;
+  font-family: 'Courier New', monospace;
+}
+
+.log-dir-badge {
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.send {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.1);
+}
+
+.recv {
+  color: #1565c0;
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.info {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.1);
+}
+
+.error {
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.1);
+}
+
+.log-uuid {
+  display: block;
+  color: #ccc;
+  font-size: 18rpx;
+  margin-bottom: 4rpx;
+  word-break: break-all;
+}
+
+.log-data {
+  font-size: 24rpx;
+  color: #444;
+  word-break: break-all;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 空状态 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 60rpx;
+  color: #bbb;
+  text-align: center;
+  gap: 12rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 12rpx;
+}

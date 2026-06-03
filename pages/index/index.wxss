@@ -1,0 +1,276 @@
+/* pages/index/index.wxss（浅色系） */
+.container {
+  min-height: 100vh;
+  background: #f2f4f8;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 状态栏 */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 16rpx 32rpx;
+  background: #ffffff;
+  border-bottom: 1rpx solid #e4e8f0;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.status-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-green { background: #43a047; box-shadow: 0 0 8rpx rgba(67, 160, 71, 0.5); }
+.dot-red   { background: #e53935; }
+.dot-blue  { background: #1976d2; box-shadow: 0 0 8rpx rgba(25, 118, 210, 0.5); animation: pulse-dot 2s ease-in-out infinite; }
+.dot-gray  { background: #bbb; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-label {
+  font-size: 24rpx;
+  color: #888;
+}
+
+/* 扫描控制 */
+.scan-control {
+  padding: 24rpx 32rpx 16rpx;
+  background: #ffffff;
+  border-bottom: 1rpx solid #e8ecf2;
+}
+
+.scan-btn-wrap {
+  margin-bottom: 16rpx;
+}
+
+.scan-btn {
+  width: 100%;
+  height: 88rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  border-radius: 16rpx;
+}
+
+.scan-info {
+  padding: 0 4rpx;
+}
+
+/* 扫描操作区（过滤 + 清空） */
+.scan-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+/* 过滤按钮 */
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid #d0d6e4;
+  background: #f2f4f8;
+  transition: all 0.2s;
+}
+
+.filter-btn:active {
+  opacity: 0.7;
+}
+
+.filter-btn-active {
+  background: rgba(245, 127, 23, 0.1);
+  border-color: rgba(245, 127, 23, 0.5);
+}
+
+.filter-btn-icon {
+  font-size: 22rpx;
+  color: #aaa;
+}
+
+.filter-btn-active .filter-btn-icon {
+  color: #f57f17;
+}
+
+.filter-btn-text {
+  font-size: 22rpx;
+  color: #aaa;
+}
+
+.filter-btn-active .filter-btn-text {
+  color: #f57f17;
+}
+
+.action-clear {
+  padding: 8rpx 4rpx;
+  color: #1976d2;
+}
+
+/* 设备列表 */
+.device-list {
+  flex: 1;
+  padding: 16rpx 20rpx 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* 设备卡片 - 宽度自适应 */
+.device-item {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 20rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 14rpx;
+  border: 1rpx solid #e4e8f0;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+
+.device-item-connected {
+  border-color: rgba(56, 142, 60, 0.4);
+  background: linear-gradient(135deg, #ffffff, #f1f8f1);
+  box-shadow: 0 2rpx 16rpx rgba(56, 142, 60, 0.15);
+}
+
+.device-item:active {
+  opacity: 0.75;
+  transform: scale(0.99);
+}
+
+.device-icon {
+  width: 68rpx;
+  height: 68rpx;
+  background: rgba(25, 118, 210, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 18rpx;
+  flex-shrink: 0;
+}
+
+.icon-ble {
+  font-size: 34rpx;
+  color: #1976d2;
+}
+
+.device-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  overflow: hidden;
+}
+
+/* 设备名称行 - 自适应排版 */
+.device-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  width: 100%;
+}
+
+.device-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-status {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.device-id {
+  color: #aaa;
+  font-size: 19rpx;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-meta {
+  gap: 8rpx;
+}
+
+/* 信号强度柱状图 */
+.rssi-bars-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 3rpx;
+  height: 22rpx;
+}
+
+.rssi-bar {
+  width: 7rpx;
+  border-radius: 2rpx;
+  flex-shrink: 0;
+}
+
+/* 四根柱子高度递增 */
+.rssi-bar-1 { height: 10rpx; }
+.rssi-bar-2 { height: 14rpx; }
+.rssi-bar-3 { height: 18rpx; }
+.rssi-bar-4 { height: 22rpx; }
+
+/* 信号强：绿 */
+.rssi-strong { background: #43a047; }
+/* 信号中：黄 */
+.rssi-medium { background: #ffb300; }
+/* 信号弱：橙红 */
+.rssi-weak   { background: #ef5350; }
+/* 无信号：灰 */
+.rssi-off    { background: #dde1e9; }
+
+.rssi-val {
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.arrow {
+  font-size: 44rpx;
+  color: #ccc;
+  margin-left: 10rpx;
+  flex-shrink: 0;
+}
+
+/* 空状态 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  color: #aaa;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}

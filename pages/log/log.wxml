@@ -1,0 +1,77 @@
+<!-- pages/log/log.wxml -->
+<view class="container">
+
+  <!-- 工具栏 -->
+  <view class="toolbar">
+    <view class="filter-tabs">
+      <text
+        class="filter-tab {{filter === 'all' ? 'tab-active' : ''}}"
+        bindtap="switchFilter"
+        data-filter="all"
+      >全部</text>
+      <text
+        class="filter-tab tab-send {{filter === 'send' ? 'tab-active-send' : ''}}"
+        bindtap="switchFilter"
+        data-filter="send"
+      >→ 发送</text>
+      <text
+        class="filter-tab tab-recv {{filter === 'recv' ? 'tab-active-recv' : ''}}"
+        bindtap="switchFilter"
+        data-filter="recv"
+      >← 接收</text>
+      <text
+        class="filter-tab tab-info {{filter === 'info' ? 'tab-active-info' : ''}}"
+        bindtap="switchFilter"
+        data-filter="info"
+      >ℹ 信息</text>
+      <text
+        class="filter-tab tab-error {{filter === 'error' ? 'tab-active-error' : ''}}"
+        bindtap="switchFilter"
+        data-filter="error"
+      >✕ 错误</text>
+    </view>
+    <view class="toolbar-actions">
+      <text class="action-btn text-sm text-blue" bindtap="exportLogs">导出</text>
+      <text class="action-btn text-sm text-red" bindtap="clearLogs">清空</text>
+    </view>
+  </view>
+
+  <!-- 日志计数 -->
+  <view class="log-count">
+    <text class="text-xs text-gray">共 {{filteredLogs.length}} 条记录</text>
+  </view>
+
+  <!-- 日志列表 -->
+  <scroll-view scroll-y class="log-list" wx:if="{{filteredLogs.length > 0}}">
+    <view
+      class="log-item log-item-{{item.direction}}"
+      wx:for="{{filteredLogs}}"
+      wx:key="id"
+      bindlongpress="copyLog"
+      data-log="{{item}}"
+    >
+      <!-- 时间 + 方向 -->
+      <view class="log-header">
+        <text class="log-time">{{item.time}}</text>
+        <view class="log-dir-badge {{item.direction}}">
+          <text wx:if="{{item.direction === 'send'}}">→ TX</text>
+          <text wx:elif="{{item.direction === 'recv'}}">← RX</text>
+          <text wx:elif="{{item.direction === 'info'}}">ℹ INFO</text>
+          <text wx:else>✕ ERR</text>
+        </view>
+      </view>
+      <!-- UUID -->
+      <text class="log-uuid text-mono text-xs text-gray" wx:if="{{item.uuid}}">{{item.uuid}}</text>
+      <!-- 数据 -->
+      <text class="log-data text-mono">{{item.data}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{filteredLogs.length === 0}}">
+    <text class="empty-icon">📋</text>
+    <text>暂无日志记录</text>
+    <text class="text-xs text-gray" style="margin-top: 12rpx;">连接设备并进行读/写/订阅操作后，日志会显示在这里</text>
+  </view>
+
+</view>

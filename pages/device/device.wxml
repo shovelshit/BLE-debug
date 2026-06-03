@@ -1,0 +1,189 @@
+<!-- pages/device/device.wxml -->
+<view class="container">
+
+  <!-- 设备信息卡片 -->
+  <view class="device-card">
+    <view class="device-header">
+      <view class="device-avatar">
+        <text class="avatar-icon">⊛</text>
+      </view>
+      <view class="device-meta">
+        <text class="device-name">{{deviceName || '未知设备'}}</text>
+        <text class="device-id text-mono text-xs text-gray">{{deviceId}}</text>
+        <view class="badge {{isConnected ? 'badge-green' : 'badge-red'}}" style="align-self: flex-start; margin-top: 8rpx;">
+          {{isConnected ? '● 已连接' : '○ 已断开'}}
+        </view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="card-actions">
+      <button class="btn btn-outline btn-sm action-btn" bindtap="refreshServices">↻ 刷新服务</button>
+      <button class="btn btn-danger btn-sm action-btn" bindtap="disconnect" wx:if="{{isConnected}}">断开连接</button>
+      <button class="btn btn-log btn-sm action-btn" bindtap="viewLogs">📋 日志</button>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-area" wx:if="{{loading}}">
+    <text class="loading-icon loading-dot">⊙</text>
+    <text class="text-gray text-sm"> 正在发现服务...</text>
+  </view>
+
+  <!-- 服务列表 -->
+  <view class="services-section">
+    <text class="section-title">服务列表 ({{services.length}})</text>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{services.length === 0 && !loading}}">
+      <text class="text-gray text-sm">暂无服务，请刷新</text>
+    </view>
+
+    <view
+      class="service-item"
+      wx:for="{{services}}"
+      wx:key="uuid"
+    >
+      <!-- 服务头部 -->
+      <view class="service-header" bindtap="toggleService" data-idx="{{index}}">
+        <view class="row" style="flex: 1; min-width: 0;">
+          <text class="service-uuid-tag text-mono">{{item.uuid}}</text>
+        </view>
+        <view class="row" style="gap: 12rpx;">
+          <text class="text-xs text-gray">{{item.characteristics.length}} 个特征值</text>
+          <text class="expand-icon text-gray">{{item.expanded ? '▲' : '▼'}}</text>
+        </view>
+      </view>
+      <view class="service-type-row">
+        <view class="badge badge-blue" wx:if="{{item.isPrimary}}">Primary</view>
+        <text
+          class="text-xs text-gray uuid-copyable"
+          bindlongpress="copyUuid"
+          data-uuid="{{item.uuid}}"
+        >{{item.uuid}}</text>
+        <text class="copy-hint text-xs">长按复制</text>
+      </view>
+
+      <!-- 特征值列表 -->
+      <view class="char-list" wx:if="{{item.expanded}}">
+        <view
+          class="char-item"
+          wx:for="{{item.characteristics}}"
+          wx:for-item="char"
+          wx:key="uuid"
+          bindtap="openCharacteristic"
+          data-service-id="{{item.uuid}}"
+          data-char-uuid="{{char.uuid}}"
+          data-properties="{{char.properties}}"
+        >
+          <view class="char-info">
+            <text
+              class="char-uuid text-mono text-sm uuid-copyable"
+              bindlongpress="copyUuid"
+              data-uuid="{{char.uuid}}"
+              catchtap=""
+            >{{char.uuid}}</text>
+            <view class="char-props">
+              <text
+                class="prop-badge {{prop === 'Read' ? 'prop-badge-read' : prop === 'Write' || prop === 'WriteNoResp' ? 'prop-badge-write' : 'prop-badge-notify'}}"
+                wx:for="{{char.propertiesStr}}"
+                wx:for-item="prop"
+                wx:key="*this"
+              >{{prop}}</text>
+            </view>
+          </view>
+          <text class="arrow text-gray">›</text>
+        </view>
+
+        <!-- 无特征值 -->
+        <view class="no-char" wx:if="{{item.characteristics.length === 0}}">
+          <text class="text-xs text-gray">无特征值</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日志面板 -->
+  <view class="log-panel">
+    <!-- 日志面板头部 -->
+    <view class="log-panel-header" bindtap="toggleLogPanel">
+      <view class="row" style="gap: 12rpx; flex: 1;">
+        <text class="log-panel-icon">📋</text>
+        <text class="log-panel-title">通信日志</text>
+        <view class="log-count-badge" wx:if="{{deviceLogs.length > 0}}">
+          <text>{{deviceLogs.length}}</text>
+        </view>
+      </view>
+      <view class="row" style="gap: 16rpx;">
+        <text class="text-xs text-gray log-panel-hint" wx:if="{{!logPanelExpanded}}">长按日志可复制</text>
+        <text class="log-panel-toggle text-gray">{{logPanelExpanded ? '▲' : '▼'}}</text>
+      </view>
+    </view>
+
+    <!-- 日志内容区 -->
+    <view class="log-panel-body" wx:if="{{logPanelExpanded}}">
+      <!-- 日志过滤标签 -->
+      <view class="log-filter-bar">
+        <view class="log-filter-tabs">
+          <text
+            class="log-filter-tab {{logFilter === 'all' ? 'log-tab-active' : ''}}"
+            bindtap="switchLogFilter"
+            data-filter="all"
+          >全部</text>
+          <text
+            class="log-filter-tab {{logFilter === 'send' ? 'log-tab-active-send' : ''}}"
+            bindtap="switchLogFilter"
+            data-filter="send"
+          >→ TX</text>
+          <text
+            class="log-filter-tab {{logFilter === 'recv' ? 'log-tab-active-recv' : ''}}"
+            bindtap="switchLogFilter"
+            data-filter="recv"
+          >← RX</text>
+          <text
+            class="log-filter-tab {{logFilter === 'info' ? 'log-tab-active-info' : ''}}"
+            bindtap="switchLogFilter"
+            data-filter="info"
+          >ℹ INFO</text>
+          <text
+            class="log-filter-tab {{logFilter === 'error' ? 'log-tab-active-error' : ''}}"
+            bindtap="switchLogFilter"
+            data-filter="error"
+          >✕ ERR</text>
+        </view>
+        <view class="row" style="gap: 16rpx; flex-shrink: 0;">
+          <text class="log-action text-blue text-xs" bindtap="clearDeviceLogs">清空</text>
+          <text class="log-action text-gray text-xs" bindtap="viewLogs">展开</text>
+        </view>
+      </view>
+
+      <!-- 日志列表 -->
+      <scroll-view scroll-y class="log-scroll" wx:if="{{filteredDeviceLogs.length > 0}}">
+        <view
+          class="dlog-item dlog-item-{{item.direction}}"
+          wx:for="{{filteredDeviceLogs}}"
+          wx:key="id"
+          bindlongpress="copyDeviceLog"
+          data-log="{{item}}"
+        >
+          <view class="dlog-header">
+            <text class="dlog-time">{{item.time}}</text>
+            <view class="dlog-dir-badge {{item.direction}}">
+              <text wx:if="{{item.direction === 'send'}}">→ TX</text>
+              <text wx:elif="{{item.direction === 'recv'}}">← RX</text>
+              <text wx:elif="{{item.direction === 'info'}}">ℹ INFO</text>
+              <text wx:else>✕ ERR</text>
+            </view>
+          </view>
+          <text class="dlog-uuid text-mono text-xs text-gray" wx:if="{{item.uuid}}">{{item.uuid}}</text>
+          <text class="dlog-data text-mono">{{item.data}}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 日志为空 -->
+      <view class="log-empty" wx:if="{{filteredDeviceLogs.length === 0}}">
+        <text class="text-gray text-sm">暂无日志，进行读写操作后会显示在这里</text>
+      </view>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,450 @@
+/* pages/device/device.wxss（浅色系） */
+.container {
+  min-height: 100vh;
+  background: #f2f4f8;
+  padding-bottom: 60rpx;
+}
+
+/* 设备卡片按钮行 */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 160rpx;
+}
+
+/* 日志按钮 */
+.btn-log {
+  background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(123, 31, 162, 0.28);
+}
+
+/* 设备卡片 */
+.device-card {
+  background: #ffffff;
+  margin: 20rpx 20rpx 12rpx;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  border: 1rpx solid #e4e8f0;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.device-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.device-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(25, 118, 210, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2rpx solid rgba(25, 118, 210, 0.2);
+}
+
+.avatar-icon {
+  font-size: 40rpx;
+  color: #1976d2;
+}
+
+.device-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.device-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.device-id {
+  font-size: 20rpx;
+  color: #aaa;
+  word-break: break-all;
+}
+
+/* 加载 */
+.loading-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx;
+  gap: 12rpx;
+}
+
+.loading-icon {
+  font-size: 36rpx;
+  color: #1976d2;
+}
+
+/* 服务区域 */
+.services-section {
+  padding: 0 20rpx;
+}
+
+.section-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  padding: 0 4rpx 14rpx;
+  display: block;
+}
+
+/* 服务项 */
+.service-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid #e4e8f0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.service-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx 8rpx;
+  gap: 12rpx;
+}
+
+.service-uuid-tag {
+  font-size: 20rpx;
+  color: #1565c0;
+  word-break: break-all;
+}
+
+.service-type-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 0 24rpx 16rpx;
+  flex-wrap: wrap;
+}
+
+/* UUID 长按复制样式 */
+.uuid-copyable:active {
+  opacity: 0.6;
+  background: rgba(25, 118, 210, 0.08);
+  border-radius: 4rpx;
+}
+
+.copy-hint {
+  color: #bbb;
+  font-size: 18rpx;
+  flex-shrink: 0;
+}
+
+.expand-icon {
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+/* 特征值列表 */
+.char-list {
+  border-top: 1rpx solid #edf0f7;
+}
+
+.char-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #f0f3f9;
+  transition: background 0.15s;
+}
+
+.char-item:active {
+  background: rgba(25, 118, 210, 0.05);
+}
+
+.char-item:last-child {
+  border-bottom: none;
+}
+
+.char-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.char-uuid {
+  font-size: 22rpx;
+  color: #444;
+  word-break: break-all;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.char-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+/* 特征值属性胶囊 badge */
+.prop-badge {
+  display: inline-block;
+  font-size: 19rpx;
+  font-weight: 600;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  margin-right: 8rpx;
+  margin-bottom: 4rpx;
+}
+
+.prop-badge-read {
+  color: #1565c0;
+  background: rgba(25, 118, 210, 0.1);
+  border: 1rpx solid rgba(25, 118, 210, 0.25);
+}
+
+.prop-badge-write {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.1);
+  border: 1rpx solid rgba(46, 125, 50, 0.25);
+}
+
+.prop-badge-notify {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.1);
+  border: 1rpx solid rgba(230, 81, 0, 0.25);
+}
+
+.arrow {
+  font-size: 48rpx;
+  color: #ccc;
+  margin-left: 12rpx;
+}
+
+.no-char {
+  padding: 20rpx 24rpx;
+  text-align: center;
+}
+
+/* ======== 日志面板 ======== */
+.log-panel {
+  margin: 16rpx 20rpx 20rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 1rpx solid #e4e8f0;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* 日志面板头部 */
+.log-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background: #faf6ff;
+  border-bottom: 1rpx solid #ede8f5;
+}
+
+.log-panel-header:active {
+  opacity: 0.8;
+}
+
+.log-panel-icon {
+  font-size: 28rpx;
+}
+
+.log-panel-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #7b1fa2;
+  letter-spacing: 1rpx;
+}
+
+.log-count-badge {
+  background: rgba(123, 31, 162, 0.1);
+  border: 1rpx solid rgba(123, 31, 162, 0.25);
+  border-radius: 20rpx;
+  padding: 2rpx 14rpx;
+  font-size: 20rpx;
+  color: #7b1fa2;
+}
+
+.log-panel-hint {
+  font-size: 20rpx;
+  color: #bbb;
+}
+
+.log-panel-toggle {
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+/* 日志面板内容 */
+.log-panel-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 日志过滤栏 */
+.log-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14rpx 20rpx;
+  border-bottom: 1rpx solid #f0f3f9;
+  gap: 12rpx;
+  background: #fafbfd;
+}
+
+.log-filter-tabs {
+  display: flex;
+  gap: 8rpx;
+  overflow-x: auto;
+  flex: 1;
+}
+
+.log-filter-tab {
+  flex-shrink: 0;
+  padding: 6rpx 14rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  color: #bbb;
+  background: #f2f4f8;
+  border: 1rpx solid transparent;
+}
+
+.log-tab-active {
+  color: #333;
+  background: #e8ecf5;
+  border-color: #c8d0e4;
+}
+
+.log-tab-active-send {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+  border-color: rgba(46, 125, 50, 0.25);
+}
+
+.log-tab-active-recv {
+  color: #1565c0;
+  background: rgba(25, 118, 210, 0.08);
+  border-color: rgba(25, 118, 210, 0.25);
+}
+
+.log-tab-active-info {
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.08);
+  border-color: rgba(230, 81, 0, 0.25);
+}
+
+.log-tab-active-error {
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.08);
+  border-color: rgba(198, 40, 40, 0.25);
+}
+
+.log-action {
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 日志滚动区 */
+.log-scroll {
+  height: 480rpx;
+  background: #fafbfd;
+}
+
+/* 日志条目 */
+.dlog-item {
+  padding: 12rpx 20rpx;
+  border-bottom: 1rpx solid #f0f3f9;
+  border-left: 4rpx solid transparent;
+}
+
+.dlog-item:active {
+  opacity: 0.7;
+}
+
+.dlog-item-send {
+  border-left-color: #43a047;
+  background: rgba(67, 160, 71, 0.04);
+}
+
+.dlog-item-recv {
+  border-left-color: #1976d2;
+  background: rgba(25, 118, 210, 0.04);
+}
+
+.dlog-item-info {
+  border-left-color: #f57f17;
+  background: rgba(245, 127, 23, 0.03);
+}
+
+.dlog-item-error {
+  border-left-color: #e53935;
+  background: rgba(229, 57, 53, 0.04);
+}
+
+.dlog-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 4rpx;
+}
+
+.dlog-time {
+  font-size: 18rpx;
+  color: #bbb;
+  font-family: 'Courier New', monospace;
+}
+
+.dlog-dir-badge {
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  font-size: 18rpx;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* 复用全局 send/recv/info/error 颜色（来自 log.wxss） */
+.dlog-dir-badge.send  { color: #2e7d32; background: rgba(46, 125, 50, 0.1); }
+.dlog-dir-badge.recv  { color: #1565c0; background: rgba(25, 118, 210, 0.1); }
+.dlog-dir-badge.info  { color: #e65100; background: rgba(230, 81, 0, 0.1); }
+.dlog-dir-badge.error { color: #c62828; background: rgba(198, 40, 40, 0.1); }
+
+.dlog-uuid {
+  display: block;
+  color: #ccc;
+  font-size: 17rpx;
+  margin-bottom: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dlog-data {
+  font-size: 22rpx;
+  color: #444;
+  word-break: break-all;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 日志为空 */
+.log-empty {
+  padding: 40rpx 24rpx;
+  text-align: center;
+}

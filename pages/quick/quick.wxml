@@ -1,0 +1,204 @@
+<!-- pages/quick/quick.wxml -->
+<view class="container">
+
+  <!-- 顶部连接状态栏 -->
+  <view class="conn-bar">
+    <view class="conn-status">
+      <view class="status-dot {{connectedDevice ? 'dot-green' : 'dot-gray'}}"></view>
+      <text class="conn-label">{{connectedDevice ? (connectedDevice.name || '未知设备') : '未连接设备'}}</text>
+    </view>
+    <view class="add-btn" bindtap="openAddEditor">
+      <text class="add-icon">＋</text>
+      <text class="add-text">新增</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{actions.length === 0}}">
+    <text class="empty-icon">⚡</text>
+    <text class="empty-title">暂无快捷操作</text>
+    <text class="empty-desc">点击右上角「＋ 新增」添加\n预配置设备、特征值和写入值\n下次一键发送</text>
+    <view class="empty-add-btn" bindtap="openAddEditor">＋ 新增快捷操作</view>
+  </view>
+
+  <!-- 操作卡片列表 -->
+  <scroll-view scroll-y class="action-list" wx:if="{{actions.length > 0}}">
+    <view
+      class="action-card action-card-{{item.color}}"
+      wx:for="{{actions}}"
+      wx:key="id"
+    >
+      <!-- 卡片头：名称 + 编辑/删除 -->
+      <view class="card-header">
+        <view class="card-title-row">
+          <view class="card-color-dot dot-{{item.color}}"></view>
+          <text class="card-name">{{item.name}}</text>
+        </view>
+        <view class="card-menu">
+          <text class="card-menu-btn" catchtap="openEditEditor" data-id="{{item.id}}">✎</text>
+          <text class="card-menu-btn card-del-btn" catchtap="deleteAction" data-id="{{item.id}}">✕</text>
+        </view>
+      </view>
+
+      <!-- 设备 / 特征值信息 -->
+      <view class="card-info">
+        <view class="info-row" wx:if="{{item.deviceMac}}">
+          <text class="info-label">设备</text>
+          <text class="info-value text-mono">{{item.deviceMac}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.serviceUuid}}">
+          <text class="info-label">服务</text>
+          <text class="info-value text-mono">{{item.serviceUuid}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">特征</text>
+          <text class="info-value text-mono">{{item.charUuid}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">值</text>
+          <view class="info-value-row">
+            <view class="type-badge type-badge-{{item.writeType}}">{{item.writeType === 'hex' ? 'HEX' : 'TXT'}}</view>
+            <text class="info-value text-mono">{{item.value}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 执行按钮 -->
+      <view
+        class="exec-btn exec-btn-{{execState[item.id] || 'idle'}} exec-btn-color-{{item.color}}"
+        bindtap="executeAction"
+        data-id="{{item.id}}"
+      >
+        <text wx:if="{{execState[item.id] === 'running'}}" class="exec-loading">⟳</text>
+        <text wx:elif="{{execState[item.id] === 'ok'}}">✓ 成功</text>
+        <text wx:elif="{{execState[item.id] === 'err'}}">✕ 失败</text>
+        <text wx:else>⚡ 一键发送</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- ========== 编辑面板（底部弹出） ========== -->
+  <view class="editor-mask" wx:if="{{showEditor}}" bindtap="closeEditor"></view>
+  <view class="editor-panel {{showEditor ? 'editor-panel-show' : ''}}">
+    <view class="editor-header">
+      <text class="editor-title">{{isEditMode ? '编辑操作' : '新增快捷操作'}}</text>
+      <text class="editor-close" bindtap="closeEditor">✕</text>
+    </view>
+
+    <scroll-view scroll-y class="editor-body">
+
+      <!-- 名称 -->
+      <view class="field-group">
+        <text class="field-label">操作名称 <text class="required">*</text></text>
+        <input
+          class="field-input"
+          value="{{form.name}}"
+          bindinput="onFormInput"
+          data-field="name"
+          placeholder="如：开灯、关风扇..."
+          placeholder-style="color:#ccc"
+          maxlength="20"
+        />
+      </view>
+
+      <!-- 设备 MAC -->
+      <view class="field-group">
+        <view class="field-label-row">
+          <text class="field-label">设备 MAC / ID <text class="field-optional">（可选，不填则用当前连接）</text></text>
+          <text class="field-fill-btn" bindtap="fillConnectedDevice">填入当前</text>
+        </view>
+        <input
+          class="field-input text-mono"
+          value="{{form.deviceMac}}"
+          bindinput="onFormInput"
+          data-field="deviceMac"
+          placeholder="留空则使用当前已连接设备"
+          placeholder-style="color:#ccc"
+        />
+      </view>
+
+      <!-- 服务 UUID -->
+      <view class="field-group">
+        <text class="field-label">服务 UUID <text class="field-optional">（可选，不填自动查找）</text></text>
+        <input
+          class="field-input text-mono"
+          value="{{form.serviceUuid}}"
+          bindinput="onFormInput"
+          data-field="serviceUuid"
+          placeholder="如：0000FFE0-0000-1000-8000-00805F9B34FB"
+          placeholder-style="color:#ccc"
+        />
+      </view>
+
+      <!-- 特征值 UUID -->
+      <view class="field-group">
+        <text class="field-label">特征值 UUID <text class="required">*</text></text>
+        <input
+          class="field-input text-mono"
+          value="{{form.charUuid}}"
+          bindinput="onFormInput"
+          data-field="charUuid"
+          placeholder="如：0000FFE1-0000-1000-8000-00805F9B34FB"
+          placeholder-style="color:#ccc"
+        />
+      </view>
+
+      <!-- 写入类型 + 值 -->
+      <view class="field-group">
+        <view class="field-label-row">
+          <text class="field-label">写入值 <text class="required">*</text></text>
+          <view class="type-switch">
+            <text
+              class="type-btn {{form.writeType === 'hex' ? 'type-active' : ''}}"
+              bindtap="switchWriteType"
+              data-type="hex"
+            >HEX</text>
+            <text
+              class="type-btn {{form.writeType === 'text' ? 'type-active' : ''}}"
+              bindtap="switchWriteType"
+              data-type="text"
+            >TEXT</text>
+          </view>
+        </view>
+        <input
+          class="field-input text-mono"
+          value="{{form.value}}"
+          bindinput="onFormInput"
+          data-field="value"
+          placeholder="{{form.writeType === 'hex' ? '如: AA BB 01 02' : '输入文本字符串'}}"
+          placeholder-style="color:#ccc"
+        />
+      </view>
+
+      <!-- 颜色选择 -->
+      <view class="field-group">
+        <text class="field-label">卡片颜色</text>
+        <view class="color-picker">
+          <view
+            class="color-option {{form.color === item.key ? 'color-option-selected' : ''}}"
+            wx:for="{{colorOptions}}"
+            wx:key="key"
+            bindtap="selectColor"
+            data-color="{{item.key}}"
+            style="background: {{item.bg}}; border-color: {{item.border}};"
+          >
+            <text style="color: {{item.text}}; font-size: 22rpx; font-weight: 600;">{{item.label}}</text>
+            <text wx:if="{{form.color === item.key}}" class="color-check" style="color: {{item.text}};">✓</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部安全区占位 -->
+      <view style="height: 40rpx;"></view>
+    </scroll-view>
+
+    <!-- 保存按钮 -->
+    <view class="editor-footer">
+      <button class="btn btn-outline editor-cancel-btn" bindtap="closeEditor">取消</button>
+      <button class="btn btn-primary editor-save-btn" bindtap="saveAction">
+        {{isEditMode ? '保存修改' : '创建操作'}}
+      </button>
+    </view>
+  </view>
+
+</view>

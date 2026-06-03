@@ -1,0 +1,275 @@
+<!-- pages/characteristic/characteristic.wxml -->
+<view class="container">
+
+  <!-- UUID 信息卡 -->
+  <view class="uuid-card">
+    <view class="uuid-row">
+      <text class="label text-gray text-xs">特征值 UUID</text>
+      <view class="uuid-row-actions">
+        <text class="copy-btn text-xs text-blue" bindtap="copyUUID">复制</text>
+      </view>
+    </view>
+    <text class="uuid-text text-mono">{{charUuid}}</text>
+    <view class="uuid-row" style="margin-top: 12rpx;">
+      <text class="label text-gray text-xs">所属服务</text>
+      <view class="uuid-row-actions">
+        <text class="copy-btn text-xs text-blue" bindtap="copyServiceUUID">复制</text>
+      </view>
+    </view>
+    <text class="uuid-text text-mono text-sm text-gray">{{serviceId}}</text>
+    <view class="divider" style="margin: 16rpx 0;"></view>
+    <!-- 属性标签 + 快捷操作入口 -->
+    <view class="props-footer-row">
+      <view class="props-row">
+        <view class="prop-chip prop-read" wx:if="{{properties.read}}">Read</view>
+        <view class="prop-chip prop-write" wx:if="{{properties.write}}">Write</view>
+        <view class="prop-chip prop-write" wx:if="{{properties.writeNoResponse}}">WriteNoResp</view>
+        <view class="prop-chip prop-notify" wx:if="{{properties.notify}}">Notify</view>
+        <view class="prop-chip prop-notify" wx:if="{{properties.indicate}}">Indicate</view>
+      </view>
+      <view class="quick-add-btn" bindtap="addToQuick" wx:if="{{properties.write || properties.writeNoResponse}}">
+        <text class="quick-add-icon">⚡</text>
+        <text class="quick-add-text">快捷操作</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== READ 区域 ===== -->
+  <view class="section-card" wx:if="{{properties.read}}">
+    <view class="section-header">
+      <text class="section-title">📥 Read</text>
+      <button
+        class="btn btn-primary btn-sm"
+        bindtap="readValue"
+        loading="{{isReading}}"
+        disabled="{{isReading}}"
+      >读取</button>
+    </view>
+    <view class="result-box" wx:if="{{readHex}}">
+      <view class="result-row">
+        <text class="result-label text-xs text-gray">HEX</text>
+        <text class="result-value text-mono text-sm text-blue">{{readHex}}</text>
+      </view>
+      <view class="result-row" wx:if="{{readValue}}">
+        <text class="result-label text-xs text-gray">ASCII</text>
+        <text class="result-value text-mono text-sm text-green">{{readValue}}</text>
+      </view>
+    </view>
+    <view class="empty-result" wx:else>
+      <text class="text-xs text-gray">点击「读取」获取特征值数据</text>
+    </view>
+  </view>
+
+  <!-- ===== WRITE 区域 ===== -->
+  <view class="section-card" wx:if="{{properties.write || properties.writeNoResponse}}">
+    <view class="section-header">
+      <text class="section-title">📤 Write</text>
+      <view class="type-switch">
+        <text
+          class="type-btn {{writeType === 'hex' ? 'type-active' : ''}}"
+          bindtap="switchWriteType"
+          data-type="hex"
+        >HEX</text>
+        <text
+          class="type-btn {{writeType === 'text' ? 'type-active' : ''}}"
+          bindtap="switchWriteType"
+          data-type="text"
+        >TEXT</text>
+      </view>
+    </view>
+
+    <view class="input-row">
+      <textarea
+        class="write-input text-mono"
+        placeholder="{{writeType === 'hex' ? '输入十六进制，如: AA BB 01 02' : '输入文本字符串'}}"
+        placeholder-style="color: #555;"
+        value="{{writeInput}}"
+        bindinput="onWriteInput"
+        maxlength="512"
+        auto-height
+      ></textarea>
+    </view>
+
+    <!-- 发送 + 保存预设 -->
+    <view class="write-action-row">
+      <view class="preset-toggle-btn" bindtap="togglePresets">
+        <text class="preset-toggle-icon">{{showPresets ? '▲' : '▼'}}</text>
+        <text class="preset-toggle-text">预设 {{presets.length > 0 ? '(' + presets.length + ')' : ''}}</text>
+      </view>
+      <view class="row" style="gap: 16rpx; flex-shrink: 0;">
+        <button
+          class="btn btn-preset-save"
+          bindtap="addPreset"
+          wx:if="{{writeInput.length > 0}}"
+          size="mini"
+        >＋ 保存</button>
+        <button
+          class="btn btn-success btn-send"
+          bindtap="writeValue"
+          loading="{{isWriting}}"
+          disabled="{{isWriting}}"
+        >发送</button>
+      </view>
+    </view>
+
+    <!-- 预设列表面板 -->
+    <view class="preset-panel" wx:if="{{showPresets}}">
+      <view class="preset-empty" wx:if="{{presets.length === 0}}">
+        <text class="text-xs text-gray">暂无预设，输入内容后点「＋ 保存」添加</text>
+      </view>
+      <view
+        class="preset-item {{editingIdx === index ? 'preset-item-editing' : ''}}"
+        wx:for="{{presets}}"
+        wx:key="id"
+        data-idx="{{index}}"
+      >
+        <!-- ===== 普通展示态 ===== -->
+        <block wx:if="{{editingIdx !== index}}">
+          <!-- 左侧：点击填充，长按菜单 -->
+          <view
+            class="preset-item-left"
+            bindtap="applyPreset"
+            bindlongpress="onPresetLongPress"
+            data-value="{{item.value}}"
+            data-type="{{item.type}}"
+            data-idx="{{index}}"
+          >
+            <text class="preset-label">{{item.label}}</text>
+            <text class="preset-value text-mono text-xs text-gray">{{item.value}}</text>
+          </view>
+          <!-- 右侧：类型 Badge + 编辑 + 删除 -->
+          <view class="preset-item-right">
+            <view class="preset-type-badge {{item.type === 'hex' ? 'badge-hex' : 'badge-text'}}">{{item.type === 'hex' ? 'HEX' : 'TXT'}}</view>
+            <text class="preset-edit-btn" catchtap="editPreset" data-idx="{{index}}">✎</text>
+            <text class="preset-del" catchtap="deletePreset" data-idx="{{index}}">✕</text>
+          </view>
+        </block>
+
+        <!-- ===== 内联编辑态 ===== -->
+        <block wx:else>
+          <view class="preset-edit-inline">
+            <view class="preset-edit-fields">
+              <view class="preset-edit-field">
+                <text class="preset-edit-field-label">名称</text>
+                <input
+                  class="preset-edit-input"
+                  value="{{editingLabel}}"
+                  bindinput="onEditLabelInput"
+                  placeholder="预设名称"
+                  placeholder-style="color:#ccc"
+                />
+              </view>
+              <view class="preset-edit-field">
+                <text class="preset-edit-field-label">值</text>
+                <input
+                  class="preset-edit-input preset-edit-input-value text-mono"
+                  value="{{editingValue}}"
+                  bindinput="onEditValueInput"
+                  placeholder="预设值"
+                  placeholder-style="color:#ccc"
+                  focus="{{true}}"
+                />
+              </view>
+            </view>
+            <view class="preset-edit-actions">
+              <text class="preset-edit-cancel" catchtap="cancelEditPreset">取消</text>
+              <text class="preset-edit-confirm" catchtap="confirmEditPreset" data-idx="{{index}}">保存</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== NOTIFY 区域 ===== -->
+  <view class="section-card" wx:if="{{properties.notify || properties.indicate}}">
+    <view class="section-header">
+      <text class="section-title">🔔 Notify</text>
+      <!-- Notify 状态指示 -->
+      <view class="notify-status-inline" wx:if="{{notifyEnabled}}">
+        <text class="status-dot dot-green"></text>
+        <text class="text-xs text-green"> 监听中</text>
+      </view>
+    </view>
+
+    <!-- 通知数据列表 -->
+    <scroll-view scroll-y class="notify-list" wx:if="{{notifyData.length > 0}}">
+      <view class="notify-item" wx:for="{{notifyData}}" wx:key="id">
+        <text class="notify-time text-xs text-gray">{{item.time}}</text>
+        <text class="notify-hex text-mono text-sm text-blue">{{item.hex}}</text>
+      </view>
+    </scroll-view>
+
+    <view class="empty-result" wx:if="{{notifyData.length === 0}}">
+      <text class="text-xs text-gray">{{notifyEnabled ? '等待设备推送数据...' : '点击「订阅」开始接收通知'}}</text>
+    </view>
+
+    <!-- 操作按钮行：放在 scroll-view 外部底部，避免被遮挡 -->
+    <view class="notify-actions">
+      <text
+        class="notify-clear-btn text-xs text-gray"
+        bindtap="clearNotifyData"
+        wx:if="{{notifyData.length > 0}}"
+      >清空</text>
+      <button
+        class="btn {{notifyEnabled ? 'btn-danger' : 'btn-primary'}} btn-sm notify-toggle-btn"
+        bindtap="toggleNotify"
+      >{{notifyEnabled ? '取消订阅' : '订阅'}}</button>
+    </view>
+  </view>
+
+  <!-- ===== 日志面板 ===== -->
+  <view class="log-panel">
+    <view class="log-panel-header" bindtap="toggleLogPanel">
+      <view class="row" style="gap: 12rpx; flex: 1;">
+        <text class="log-panel-icon">📋</text>
+        <text class="log-panel-title">通信日志</text>
+        <view class="log-count-badge" wx:if="{{charLogs.length > 0}}">
+          <text>{{charLogs.length}}</text>
+        </view>
+      </view>
+      <view class="row" style="gap: 16rpx;">
+        <text class="log-panel-toggle">{{logPanelExpanded ? '▲' : '▼'}}</text>
+      </view>
+    </view>
+
+    <view class="log-panel-body" wx:if="{{logPanelExpanded}}">
+      <view class="log-filter-bar">
+        <view class="log-filter-tabs">
+          <text class="log-filter-tab {{logFilter === 'all' ? 'log-tab-active' : ''}}" bindtap="switchLogFilter" data-filter="all">全部</text>
+          <text class="log-filter-tab {{logFilter === 'send' ? 'log-tab-active-send' : ''}}" bindtap="switchLogFilter" data-filter="send">→ TX</text>
+          <text class="log-filter-tab {{logFilter === 'recv' ? 'log-tab-active-recv' : ''}}" bindtap="switchLogFilter" data-filter="recv">← RX</text>
+          <text class="log-filter-tab {{logFilter === 'info' ? 'log-tab-active-info' : ''}}" bindtap="switchLogFilter" data-filter="info">ℹ INFO</text>
+          <text class="log-filter-tab {{logFilter === 'error' ? 'log-tab-active-error' : ''}}" bindtap="switchLogFilter" data-filter="error">✕ ERR</text>
+        </view>
+        <text class="log-action text-red text-xs" bindtap="clearCharLogs" wx:if="{{charLogs.length > 0}}">清空</text>
+      </view>
+
+      <scroll-view scroll-y class="log-scroll" wx:if="{{filteredCharLogs.length > 0}}">
+        <view
+          class="dlog-item dlog-item-{{item.direction}}"
+          wx:for="{{filteredCharLogs}}"
+          wx:key="id"
+          bindlongpress="copyCharLog"
+          data-log="{{item}}"
+        >
+          <view class="dlog-header">
+            <text class="dlog-time">{{item.time}}</text>
+            <view class="dlog-dir-badge {{item.direction}}">
+              <text wx:if="{{item.direction === 'send'}}">→ TX</text>
+              <text wx:elif="{{item.direction === 'recv'}}">← RX</text>
+              <text wx:elif="{{item.direction === 'info'}}">ℹ INFO</text>
+              <text wx:else>✕ ERR</text>
+            </view>
+          </view>
+          <text class="dlog-data text-mono">{{item.data}}</text>
+        </view>
+      </scroll-view>
+
+      <view class="log-empty" wx:if="{{filteredCharLogs.length === 0}}">
+        <text class="text-gray text-sm">暂无日志，进行读写/订阅后会显示在这里</text>
+      </view>
+    </view>
+  </view>
+
+</view>

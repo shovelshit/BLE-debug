@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/device/device",
+    "pages/characteristic/characteristic",
+    "pages/log/log",
+    "pages/quick/quick"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "BLE 调试助手",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f2f4f8"
+  },
+  "tabBar": {
+    "color": "#aaa",
+    "selectedColor": "#1565c0",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "扫描",
+        "iconPath": "assets/icons/scan.png",
+        "selectedIconPath": "assets/icons/scan_active.png"
+      },
+      {
+        "pagePath": "pages/quick/quick",
+        "text": "快捷",
+        "iconPath": "assets/icons/quick.png",
+        "selectedIconPath": "assets/icons/quick_active.png"
+      },
+      {
+        "pagePath": "pages/log/log",
+        "text": "日志",
+        "iconPath": "assets/icons/log.png",
+        "selectedIconPath": "assets/icons/log_active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.bluetooth": {
+      "desc": "需要使用蓝牙功能进行设备调试"
+    }
+  }
+}

@@ -1,0 +1,114 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+
+  <!-- 顶部状态栏 -->
+  <view class="status-bar">
+    <view class="status-item">
+      <text class="status-dot {{bluetoothState === 'on' ? 'dot-green' : bluetoothState === 'unsupported' ? 'dot-gray' : 'dot-red'}}"></text>
+      <text class="status-label">蓝牙 {{bluetoothState === 'on' ? '已开启' : bluetoothState === 'unsupported' ? '不支持' : '未开启'}}</text>
+    </view>
+    <view class="status-item" wx:if="{{connectedDeviceId}}">
+      <text class="status-dot dot-blue"></text>
+      <text class="status-label text-blue">已连接设备</text>
+    </view>
+  </view>
+
+  <!-- 扫描控制区 -->
+  <view class="scan-control">
+    <view class="scan-btn-wrap">
+      <button
+        class="btn {{isScanning ? 'btn-danger' : 'btn-primary'}} scan-btn"
+        bindtap="toggleScan"
+        disabled="{{(bluetoothState !== 'on' && !isScanning) || isUnsupported}}"
+      >
+        <text wx:if="{{isScanning}}" class="loading-dot">⟳ </text>
+        <text>{{isScanning ? '停止扫描' : '开始扫描'}}</text>
+      </button>
+    </view>
+
+    <view class="scan-info row-between">
+      <text class="text-gray text-sm">
+        发现 <text class="text-blue text-bold">{{devices.length}}</text> 个设备
+        <text wx:if="{{filteredDevices.length !== devices.length}}" class="text-gray"> (显示 <text class="text-yellow text-bold">{{filteredDevices.length}}</text> 个)</text>
+        <text wx:if="{{isScanning}}" class="text-yellow"> · 扫描中...</text>
+      </text>
+      <view class="scan-actions">
+        <!-- 过滤空设备按钮 -->
+        <view
+          class="filter-btn {{filterEmpty ? 'filter-btn-active' : ''}}"
+          bindtap="toggleFilterEmpty"
+        >
+          <text class="filter-btn-icon">{{filterEmpty ? '⊘' : '◉'}}</text>
+          <text class="filter-btn-text">{{filterEmpty ? '已过滤' : '过滤空'}}</text>
+        </view>
+        <text class="text-sm text-gray action-clear" bindtap="clearDevices" wx:if="{{devices.length > 0 && !isScanning}}">清空</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 设备列表 -->
+  <scroll-view scroll-y class="device-list" wx:if="{{filteredDevices.length > 0}}">
+    <view
+      class="device-item {{connectedDeviceId === item.deviceId ? 'device-item-connected' : ''}}"
+      wx:for="{{filteredDevices}}"
+      wx:key="deviceId"
+      bindtap="selectDevice"
+      data-device="{{item}}"
+    >
+      <!-- 左侧图标 -->
+      <view class="device-icon">
+        <text class="icon-ble">⊛</text>
+      </view>
+
+      <!-- 设备信息 -->
+      <view class="device-info">
+        <view class="device-name-row">
+          <text class="device-name text-ellipsis">{{item.name}}</text>
+          <view class="badge {{connectedDeviceId === item.deviceId ? 'badge-green' : 'badge-blue'}} badge-status">
+            {{connectedDeviceId === item.deviceId ? '已连接' : '点击连接'}}
+          </view>
+        </view>
+        <text class="device-id text-gray text-xs text-mono">{{item.deviceId}}</text>
+        <view class="row device-meta">
+          <view class="rssi-bars-wrap">
+            <view class="rssi-bar rssi-bar-1 {{item.RSSI >= -90 ? (item.RSSI >= -60 ? 'rssi-strong' : item.RSSI >= -70 ? 'rssi-medium' : 'rssi-weak') : 'rssi-off'}}"></view>
+            <view class="rssi-bar rssi-bar-2 {{item.RSSI >= -80 ? (item.RSSI >= -60 ? 'rssi-strong' : item.RSSI >= -70 ? 'rssi-medium' : 'rssi-weak') : 'rssi-off'}}"></view>
+            <view class="rssi-bar rssi-bar-3 {{item.RSSI >= -70 ? (item.RSSI >= -60 ? 'rssi-strong' : 'rssi-medium') : 'rssi-off'}}"></view>
+            <view class="rssi-bar rssi-bar-4 {{item.RSSI >= -60 ? 'rssi-strong' : 'rssi-off'}}"></view>
+          </view>
+          <text class="text-xs text-gray rssi-val"> {{item.RSSI}} dBm</text>
+        </view>
+      </view>
+
+      <!-- 右侧箭头 -->
+      <text class="arrow text-gray">›</text>
+    </view>
+  </scroll-view>
+
+  <!-- 过滤后无结果 -->
+  <view class="empty-state" wx:if="{{filteredDevices.length === 0 && devices.length > 0 && !isScanning}}">
+    <text class="empty-icon">🔍</text>
+    <text>所有设备均无名称</text>
+    <text class="text-xs text-gray" style="margin-top: 12rpx;">关闭过滤可查看全部 {{devices.length}} 个设备</text>
+  </view>
+
+  <!-- 不支持蓝牙（PC/Mac） -->
+  <view class="empty-state" wx:if="{{isUnsupported}}">
+    <text class="empty-icon">💻</text>
+    <text>当前平台不支持蓝牙</text>
+    <text class="text-xs text-gray" style="margin-top: 12rpx;">请在 iOS 或 Android 设备上使用</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{devices.length === 0 && !isScanning && !isUnsupported}}">
+    <text class="empty-icon">📡</text>
+    <text>点击「开始扫描」搜索附近蓝牙设备</text>
+    <text class="text-xs text-gray" style="margin-top: 12rpx;">请确保蓝牙已开启并授权</text>
+  </view>
+
+  <view class="empty-state" wx:if="{{devices.length === 0 && isScanning}}">
+    <text class="empty-icon loading-dot">⊙</text>
+    <text>扫描中，请稍候...</text>
+  </view>
+
+</view>
