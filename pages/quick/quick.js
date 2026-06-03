@@ -257,13 +257,26 @@ color: 'blue',
         // 先停止扫描、解绑旧监听，再断开旧设备
         wx.stopBluetoothDevicesDiscovery({ complete: () => {} });
         wx.offBluetoothDeviceFound();
+        // 清空全局状态（无论断开是否成功）
+        app.globalData.connectedDevice = null;
+        app.globalData.services = [];
+        this.setData({ connectedDevice: null });
+        // 超时兜底：3s 内 complete 未触发则直接继续
+        let disconnected = false;
+        const disconnectTimer = setTimeout(() => {
+          if (!disconnected && this._currentSession === session) {
+            disconnected = true;
+            app.addLog('info', '', '[快捷] 断开超时，继续扫描', 'info');
+            doConnect();
+          }
+        }, 3000);
         wx.closeBluetoothConnection({
           deviceId: connected.deviceId,
           complete: () => {
-            if (this._currentSession !== session) return; // 已被更新的请求取代
-            app.globalData.connectedDevice = null;
-            app.globalData.services = [];
-            this.setData({ connectedDevice: null });
+            if (disconnected) return; // 已由超时触发
+            disconnected = true;
+            clearTimeout(disconnectTimer);
+            if (this._currentSession !== session) return;
             doConnect();
           }
         });
@@ -277,44 +290,13 @@ color: 'blue',
     this._execFail(id, '请先连接设备');
   },
 
-  // 扫描并连接目标设备
+  // 扫描并连接目标设备（直接走扫描，不做直连尝试，避免断开旧设备后的无效等待）
   _scanAndConnect(id, action, targetMac, session) {
     const doScan = () => {
-      if (this._currentSession !== session) return; // 会话已失效
+      if (this._currentSession !== session) return;
       app.addLog('info', '', `[快捷] 扫描目标设备: ${targetMac}`, 'info');
       this._setExecState(id, 'running', '扫描中...');
-
-      // 先尝试直接连接（设备可能还在系统缓存中）
-      wx.createBLEConnection({
-        deviceId: targetMac,
-        timeout: 4000,
-        success: () => {
-          if (this._currentSession !== session) {
-            // 已被新请求取代，断开这次多余的连接
-            wx.closeBluetoothConnection({ deviceId: targetMac, complete: () => {} });
-            return;
-          }
-          // 直连成功：读蓝牙缓存获取真实设备名（纯读，不发起扫描，不注册监听）
-          this._resolveDeviceName(targetMac, (realName) => {
-            if (this._currentSession !== session) {
-              wx.closeBluetoothConnection({ deviceId: targetMac, complete: () => {} });
-              return;
-            }
-            const fallbackName = targetMac.replace(/:/g, '').slice(-6).toUpperCase();
-            const device = { deviceId: targetMac, name: realName || action.deviceName || fallbackName };
-            app.globalData.connectedDevice = device;
-            app.globalData.services = [];
-            this.setData({ connectedDevice: device });
-            app.addLog('info', '', `[快捷] 直连成功: ${device.name}`, 'info');
-            this._setExecState(id, 'running', '发现服务...');
-            this._discoverAndExecute(id, action, targetMac, session);
-          });
-        },
-        fail: () => {
-          if (this._currentSession !== session) return;
-          this._startScanForDevice(id, action, targetMac, session);
-        }
-      });
+      this._startScanForDevice(id, action, targetMac, session);
     };
 
     if (app.globalData.bluetoothInited) {
