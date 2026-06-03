@@ -1,4 +1,6 @@
 // app.js
+const { initStorageDefaults } = require('./constants/storageDefaults');
+
 App({
   globalData: {
     // 当前连接的设备
@@ -12,6 +14,9 @@ App({
   },
 
   onLaunch() {
+    // 首次初始化：将默认数据写入 storage
+    initStorageDefaults();
+
     // PC/Mac 微信不支持蓝牙，跳过初始化
     const { platform } = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
     this.globalData.platform = platform;

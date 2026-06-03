@@ -1,6 +1,6 @@
 // pages/quick/quick.js
 const app = getApp();
-const STORAGE_KEY = 'quick_actions';
+const { STORAGE_KEYS, getWithDefault } = require('../../constants/storageDefaults');
 
 Page({
   data: {
@@ -88,17 +88,13 @@ color: 'blue',
 
   // ==================== 数据持久化 ====================
   _loadActions() {
-    try {
-      const raw = wx.getStorageSync(STORAGE_KEY);
-      this.setData({ actions: Array.isArray(raw) ? raw : [] });
-    } catch (e) {
-      this.setData({ actions: [] });
-    }
+    const raw = getWithDefault(STORAGE_KEYS.QUICK_ACTIONS);
+    this.setData({ actions: Array.isArray(raw) ? raw : [] });
   },
 
   _saveActions() {
     try {
-      wx.setStorageSync(STORAGE_KEY, this.data.actions);
+      wx.setStorageSync(STORAGE_KEYS.QUICK_ACTIONS, this.data.actions);
     } catch (e) {}
   },
 

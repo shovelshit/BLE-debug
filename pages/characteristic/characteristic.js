@@ -1,5 +1,6 @@
 // pages/characteristic/characteristic.js
 const app = getApp();
+const { PRESETS_KEY, getPresetDefault } = require('../../constants/storageDefaults');
 
 Page({
   data: {
@@ -17,10 +18,10 @@ Page({
     writeType: 'hex', // 'hex' | 'text'
 
     // 预设值
-    presets: [],        // [{id, label, value, type}]
+    presets: [],        // [{id, name, value, type}]
     showPresets: false, // 是否展开预设面板
     editingIdx: -1,     // 当前内联编辑的预设下标，-1 表示无
-    editingLabel: '',   // 编辑中的名称
+    editingName: '',    // 编辑中的名称
     editingValue: '',   // 编辑中的值
 
     // 通知状态
@@ -50,7 +51,7 @@ Page({
       charUuid: uuid,
       properties: props,
     });
-    this._loadPresets(uuid);
+    this._loadPresets();
   },
 
   onShow() {
@@ -349,16 +350,16 @@ wx.switchTab({ url: '/pages/quick/quick' });
 },
 
   // ===================== 预设值 =====================
-  _storageKey(uuid) {
-    return `presets_${(uuid || this.data.charUuid).replace(/[^a-zA-Z0-9]/g, '_')}`;
+  _storageKey() {
+    return PRESETS_KEY;
   },
 
-  _loadPresets(uuid) {
+  _loadPresets() {
     try {
-      const raw = wx.getStorageSync(this._storageKey(uuid));
-      this.setData({ presets: Array.isArray(raw) ? raw : [] });
+      const raw = wx.getStorageSync(this._storageKey());
+      this.setData({ presets: Array.isArray(raw) ? raw : getPresetDefault() });
     } catch (e) {
-      this.setData({ presets: [] });
+      this.setData({ presets: getPresetDefault() });
     }
   },
 
@@ -386,7 +387,7 @@ wx.switchTab({ url: '/pages/quick/quick' });
       return;
     }
     // 重名检测
-    if (presets.some(p => p.value === writeInput.trim() && p.type === writeType)) {
+    if (presets.some(p => p.name === writeInput.trim() && p.type === writeType)) {
       wx.showToast({ title: '预设已存在', icon: 'none' });
       return;
     }
@@ -396,9 +397,9 @@ wx.switchTab({ url: '/pages/quick/quick' });
       placeholderText: '输入预设名称（可留空）',
       success: (res) => {
         if (!res.confirm) return;
-        const label = (res.content || '').trim() || writeInput.trim().slice(0, 12);
+        const name = (res.content || '').trim() || writeInput.trim().slice(0, 12);
         const newPresets = [
-          { id: Date.now(), label, value: writeInput.trim(), type: writeType },
+          { id: Date.now(), name, value: writeInput.trim(), type: writeType },
           ...presets,
         ];
         this.setData({ presets: newPresets, showPresets: true });
@@ -430,7 +431,7 @@ wx.switchTab({ url: '/pages/quick/quick' });
     const idx = e.currentTarget.dataset.idx;
     wx.showModal({
       title: '删除预设',
-      content: `确认删除「${this.data.presets[idx].label}」？`,
+      content: `确认删除「${this.data.presets[idx].name}」？`,
       confirmColor: '#e53935',
       success: (res) => {
         if (!res.confirm) return;
@@ -448,13 +449,13 @@ wx.switchTab({ url: '/pages/quick/quick' });
     const preset = this.data.presets[idx];
     this.setData({
       editingIdx: idx,
-      editingLabel: preset.label,
+      editingName: preset.name,
       editingValue: preset.value,
     });
   },
 
-  onEditLabelInput(e) {
-    this.setData({ editingLabel: e.detail.value });
+  onEditNameInput(e) {
+    this.setData({ editingName: e.detail.value });
   },
 
   onEditValueInput(e) {
@@ -464,7 +465,7 @@ wx.switchTab({ url: '/pages/quick/quick' });
   // 确认保存编辑
   confirmEditPreset(e) {
     const idx = e.currentTarget.dataset.idx;
-    const { editingLabel, editingValue, presets } = this.data;
+    const { editingName, editingValue, presets } = this.data;
     if (!editingValue.trim()) {
       wx.showToast({ title: '值不能为空', icon: 'none' });
       return;
@@ -472,17 +473,17 @@ wx.switchTab({ url: '/pages/quick/quick' });
     const updated = [...presets];
     updated[idx] = {
       ...updated[idx],
-      label: editingLabel.trim() || editingValue.trim().slice(0, 12),
+      name: editingName.trim() || editingValue.trim().slice(0, 12),
       value: editingValue.trim(),
     };
-    this.setData({ presets: updated, editingIdx: -1, editingLabel: '', editingValue: '' });
+    this.setData({ presets: updated, editingIdx: -1, editingName: '', editingValue: '' });
     this._savePresets();
     wx.showToast({ title: '已更新', icon: 'success' });
   },
 
   // 取消编辑
   cancelEditPreset() {
-    this.setData({ editingIdx: -1, editingLabel: '', editingValue: '' });
+    this.setData({ editingIdx: -1, editingName: '', editingValue: '' });
   },
 
   // ===================== 日志面板 =====================

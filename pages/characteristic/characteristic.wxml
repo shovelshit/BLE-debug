@@ -134,7 +134,7 @@
             data-type="{{item.type}}"
             data-idx="{{index}}"
           >
-            <text class="preset-label">{{item.label}}</text>
+            <text class="preset-label">{{item.name}}</text>
             <text class="preset-value text-mono text-xs text-gray">{{item.value}}</text>
           </view>
           <!-- 右侧：类型 Badge + 编辑 + 删除 -->
@@ -153,8 +153,8 @@
                 <text class="preset-edit-field-label">名称</text>
                 <input
                   class="preset-edit-input"
-                  value="{{editingLabel}}"
-                  bindinput="onEditLabelInput"
+                  value="{{editingName}}"
+                  bindinput="onEditNameInput"
                   placeholder="预设名称"
                   placeholder-style="color:#ccc"
                 />
