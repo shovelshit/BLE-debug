@@ -69,7 +69,10 @@
         bindtap="executeAction"
         data-id="{{item.id}}"
       >
-        <text wx:if="{{execState[item.id] === 'running'}}" class="exec-loading">⟳</text>
+        <block wx:if="{{execState[item.id] === 'running'}}">
+          <text class="exec-loading">⟳</text>
+          <text wx:if="{{execHint[item.id]}}" class="exec-hint-text"> {{execHint[item.id]}}</text>
+        </block>
         <text wx:elif="{{execState[item.id] === 'ok'}}">✓ 成功</text>
         <text wx:elif="{{execState[item.id] === 'err'}}">✕ 失败</text>
         <text wx:else>⚡ 一键发送</text>

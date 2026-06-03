@@ -35,6 +35,8 @@ Page({
 
     // 执行状态：{ [id]: 'idle'|'running'|'ok'|'err' }
     execState: {},
+    // 执行提示文字：{ [id]: string }
+    execHint: {},
   },
 
 onLoad() {
@@ -237,7 +239,7 @@ color: 'blue',
     const session = `s_${Date.now()}_${Math.random()}`;
     this._currentSession = session;
 
-    this._setExecState(id, 'running');
+    this._setExecState(id, 'running', '连接中...');
 
     const connected = app.globalData.connectedDevice;
     const targetMac = action.deviceMac;
@@ -280,6 +282,7 @@ color: 'blue',
     const doScan = () => {
       if (this._currentSession !== session) return; // 会话已失效
       app.addLog('info', '', `[快捷] 扫描目标设备: ${targetMac}`, 'info');
+      this._setExecState(id, 'running', '扫描中...');
 
       // 先尝试直接连接（设备可能还在系统缓存中）
       wx.createBLEConnection({
@@ -303,6 +306,7 @@ color: 'blue',
             app.globalData.services = [];
             this.setData({ connectedDevice: device });
             app.addLog('info', '', `[快捷] 直连成功: ${device.name}`, 'info');
+            this._setExecState(id, 'running', '发现服务...');
             this._discoverAndExecute(id, action, targetMac, session);
           });
         },
@@ -359,7 +363,7 @@ color: 'blue',
 
   _startScanForDevice(id, action, targetMac, session) {
     let found = false;
-    const TIMEOUT = 12000;
+    const TIMEOUT = 6000; // 6s 扫不到就报错，避免用户长时间等待
 
     const cleanup = () => {
       clearTimeout(timeoutTimer);
@@ -412,6 +416,7 @@ color: 'blue',
               app.globalData.services = [];
               this.setData({ connectedDevice: devInfo });
               app.addLog('info', '', `[快捷] 连接成功: ${devInfo.name}`, 'info');
+              this._setExecState(id, 'running', '发现服务...');
               this._discoverAndExecute(id, action, targetMac, session);
             },
             fail: (err) => {
@@ -481,8 +486,10 @@ color: 'blue',
   // （已在 onLoad 统一注册）
   _registerConnectionStateChange() {},
 
-  _setExecState(id, state) {
-    this.setData({ execState: { ...this.data.execState, [id]: state } });
+  _setExecState(id, state, hint) {
+    const execState = { ...this.data.execState, [id]: state };
+    const execHint  = { ...this.data.execHint,  [id]: hint || '' };
+    this.setData({ execState, execHint });
   },
 
   _doExecute(id, action, deviceId, session) {
@@ -604,22 +611,14 @@ color: 'blue',
   },
 
   _execOk(id) {
-    const execState = { ...this.data.execState, [id]: 'ok' };
-    this.setData({ execState });
-    setTimeout(() => {
-      const s = { ...this.data.execState, [id]: 'idle' };
-      this.setData({ execState: s });
-    }, 2000);
+    this._setExecState(id, 'ok', '');
+    setTimeout(() => { this._setExecState(id, 'idle', ''); }, 2000);
   },
 
   _execFail(id, msg) {
-    const execState = { ...this.data.execState, [id]: 'err' };
-    this.setData({ execState });
-    wx.showToast({ title: msg || '执行失败', icon: 'none' });
-    setTimeout(() => {
-      const s = { ...this.data.execState, [id]: 'idle' };
-      this.setData({ execState: s });
-    }, 2500);
+    this._setExecState(id, 'err', '');
+    wx.showToast({ title: msg || '执行失败', icon: 'none', duration: 2000 });
+    setTimeout(() => { this._setExecState(id, 'idle', ''); }, 2500);
   },
 
   _execIdle(id) {
