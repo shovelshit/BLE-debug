@@ -590,13 +590,33 @@ color: 'blue',
 
   _execOk(id) {
     this._setExecState(id, 'ok', '');
+    this._disconnectAfterExec();
     setTimeout(() => { this._setExecState(id, 'idle', ''); }, 2000);
   },
 
   _execFail(id, msg) {
     this._setExecState(id, 'err', '');
+    this._disconnectAfterExec();
     wx.showToast({ title: msg || '执行失败', icon: 'none', duration: 2000 });
     setTimeout(() => { this._setExecState(id, 'idle', ''); }, 2500);
+  },
+
+  // 写入完成后断开蓝牙连接，释放设备
+  _disconnectAfterExec() {
+    const connected = app.globalData.connectedDevice;
+    if (!connected) return;
+    const deviceId = connected.deviceId;
+    // 清空全局状态
+    app.globalData.connectedDevice = null;
+    app.globalData.services = [];
+    this.setData({ connectedDevice: null });
+    // 异步断开连接
+    wx.closeBLEConnection({
+      deviceId,
+      complete: () => {
+        app.addLog('info', '', `[快捷] 已断开设备连接`, 'info');
+      }
+    });
   },
 
   _execIdle(id) {

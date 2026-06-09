@@ -3,3 +3,5 @@ project.private.config.json
 
 # macOS
 .DS_Store
+
+constants\storageDefaults.js

@@ -1,6 +1,6 @@
 // pages/characteristic/characteristic.js
 const app = getApp();
-const { PRESETS_KEY, getPresetDefault } = require('../../constants/storageDefaults');
+const { STORAGE_KEYS, getPresetDefault } = require('../../constants/storageDefaults');
 
 Page({
   data: {
@@ -351,7 +351,7 @@ wx.switchTab({ url: '/pages/quick/quick' });
 
   // ===================== 预设值 =====================
   _storageKey() {
-    return PRESETS_KEY;
+    return STORAGE_KEYS.PRESETS;
   },
 
   _loadPresets() {

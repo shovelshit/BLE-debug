@@ -4,35 +4,27 @@
 // 存储键名常量
 const STORAGE_KEYS = {
   QUICK_ACTIONS: 'quick_actions',
+  PRESETS: 'presets_global',
   INIT_FLAG: '__storage_inited__',
 };
 
-// 内置默认数据
-const BUILTIN_DEFAULTS = {
-  [STORAGE_KEYS.QUICK_ACTIONS]:[],
-};
-
-// 预设值 storage 键（全局维度）
-const PRESETS_KEY = 'presets_global';
-
-
-// 各存储项的默认值（读取时兜底）
-const DEFAULTS = {
+// 统一的默认配置（写入初始化 + 读取兜底共用）
+const DEFAULT_CONFIG = {
   [STORAGE_KEYS.QUICK_ACTIONS]: [],
-  // 预设值按动态键存储，默认值为 []
+  [STORAGE_KEYS.PRESETS]: [],
 };
 
 /**
- * 首次初始化：将内置默认数据写入 storage（仅执行一次）
+ * 首次初始化：将默认数据写入 storage（仅执行一次）
  */
 function initStorageDefaults() {
   try {
     const inited = wx.getStorageSync(STORAGE_KEYS.INIT_FLAG);
     if (inited) return; // 已初始化过，跳过
 
-    // 写入各内置默认值
-    Object.keys(BUILTIN_DEFAULTS).forEach((key) => {
-      const val = BUILTIN_DEFAULTS[key];
+    // 写入各默认值
+    Object.keys(DEFAULT_CONFIG).forEach((key) => {
+      const val = DEFAULT_CONFIG[key];
       // 仅当 storage 中不存在时才写入，避免覆盖用户已有数据
       const existing = wx.getStorageSync(key);
       if (existing === undefined || existing === '') {
@@ -54,9 +46,9 @@ function initStorageDefaults() {
 function getWithDefault(key) {
   try {
     const raw = wx.getStorageSync(key);
-    return raw !== undefined && raw !== '' ? raw : (DEFAULTS[key] ?? undefined);
+    return raw !== undefined && raw !== '' ? raw : (DEFAULT_CONFIG[key] ?? undefined);
   } catch (e) {
-    return DEFAULTS[key] ?? undefined;
+    return DEFAULT_CONFIG[key] ?? undefined;
   }
 }
 
@@ -70,9 +62,7 @@ function getPresetDefault() {
 
 module.exports = {
   STORAGE_KEYS,
-  BUILTIN_DEFAULTS,
-  PRESETS_KEY,
-  DEFAULTS,
+  DEFAULT_CONFIG,
   initStorageDefaults,
   getWithDefault,
   getPresetDefault,
