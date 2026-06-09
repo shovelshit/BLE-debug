@@ -6,7 +6,7 @@ Page({
     isScanning: false,
     devices: [],         // 扫描到的设备列表（全部）
     filteredDevices: [], // 过滤后的设备列表
-    filterEmpty: false,  // 是否过滤无名称设备
+    filterEmpty: true,   // 是否过滤无名称设备（默认开启）
     searchKeyword: '',   // 搜索关键词
     connectedDeviceId: null,
     bluetoothState: 'unknown', // 'unknown' | 'on' | 'off' | 'unsupported'
