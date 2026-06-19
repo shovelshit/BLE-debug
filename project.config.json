@@ -19,17 +19,20 @@
     "minifyWXSS": true,
     "localPlugins": false,
     "disableUseStrict": false,
-    "condition": false,
+    "condition": true,
     "swc": false,
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "simulatorPluginLibVersion": {},
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3"
+  },
   "packOptions": {
     "ignore": [],
     "include": []
   },
   "appid": "wx869231c34e315696",
   "editorSetting": {},
-  "libVersion": "3.16.1"
+  "libVersion": "3.16.1",
+  "projectArchitecture": "multiPlatform"
 }

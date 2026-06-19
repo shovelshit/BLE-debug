@@ -1,0 +1,66 @@
+构建项目资源包中...
+正在编译代码
+Compile miniprogram
+Compile jSON files
+Append babel helper files
+Seal code package
+analyzing codes...
+analyzing codes success
+Pack resource file finish
+编译所有文件完成，共编译 57 个文件，耗时：698ms
+过滤文件
+正在处理编译结果
+处理编译结果完成，耗时：0ms
+正在对比文件列表
+analyzing codes...
+analyzing codes success
+对比文件列表完成，耗时：1ms
+正在打包
+打包完成，耗时：0ms
+上传中
+上传完成，耗时：3147ms
+下载项目资源包中...
+下载项目资源包成功
+生成项目资源包中...
+Compile app.json
+Compile ext.json
+Compile json files of 5 pages
+生成项目资源包成功
+构建项目资源包成功
+runNative-10
+update app base info...
+update app module info...
+updatePrivacyBackgroundImage contentViewImage
+updatePrivacyBackgroundImage confirmButtonImage
+updatePrivacyBackgroundImage cancelButtonImage
+no PlugIns folder...
+not using tpush...
+update app icons...
+genAssetCar: false
+using default app icons when appStore1024 is not config...
+using default app icons when mainIcon120 is not config...
+更新 App 图标可能不生效，可使用远程构建验证图标设置；工具将会缓存图标构建结果
+update splashscreen image...
+update splashscreen video...
+update extendsdk...
+useExtendedSdks: {"WeAppOpenFuns":true,"WeAppNetwork":false,"WeAppBluetooth":false,"WeAppMedia":false,"WeAppLBS":false,"WeAppOthers":false}
+packing the ipa...
+signing the app...
+Run command: MiniappBuilder.exe --appid wx869231c34e315696 --action sign --ipa C:/Users/电脑/AppData/Local/Temp/miniapp-unsigned.ipa --type appleId --entitlements com.apple.developer.associated-domains=applinks%3Ahelp.wechat.com%2Fweappdemo%2F --install true --deviceId 00008130-000A6DCE11E8001C --bundleId auto...
+Detected device:♻️
+Starting notification connection to device: ♻️
+
+Init the sign environment...
+
+Swizzled Client Info: <MacBookPro15,1> <Mac OS X;10.15.2;19C57> <com.apple.AuthKit/1 (com.apple.dt.Xcode/3594.4.19)>
+
+Swizzled Device ID: 0135f833-97ea-4519-9768-ead528a3252d
+
+Cryptographic DRBG state is bigger than necessary. Need 1176, Got 1280,
+Received auth response status code: 200
+
+Error: com.devtools.miniappBuilder.Localized (This action could not be completed. Try again. (-22410)).
+
+Failed to exec command: MiniappBuilder.exe --appid wx869231c34e315696 --action sign --ipa C:/Users/电脑/AppData/Local/Temp/miniapp-unsigned.ipa --type appleId --entitlements com.apple.developer.associated-domains=applinks%3Ahelp.wechat.com%2Fweappdemo%2F --install true --deviceId 00008130-000A6DCE11E8001C --bundleId auto
+IPA 构建失败，请前往社区反馈[url:https://developers.weixin.qq.com/community/minihome/mixflow/2889188691586351105]
+IPA 构建失败，请前往社区反馈[url:https://developers.weixin.qq.com/community/minihome/mixflow/2889188691586351105]
