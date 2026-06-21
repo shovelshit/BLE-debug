@@ -10,8 +10,8 @@
 
 | 工具 | 用途 | 下载 |
 |------|------|------|
-| **iLoader (Mac)** | 安装 IPA | [GitHub Releases](https://github.com/iLoader/iLoader/releases) |
-| **iLoader (Windows)** | 安装 IPA | [GitHub Releases](https://github.com/iLoader/iLoader/releases) |
+| **iLoader (Mac)** | 安装 IPA | [[GitHub Releases]](https://github.com/nab138/iloader/releases) |
+| **iLoader (Windows)** | 安装 IPA | [[GitHub Releases]](https://github.com/nab138/iloader/releases) |
 | **SideStore** | 续签（可选） | [sidestore.io](https://sidestore.io) |
 
 > ⚠️ **当前已知问题**：SideStore 登录 Apple ID 存在 Bug，暂时无法通过 SideStore 直接安装。  
